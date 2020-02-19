@@ -12,7 +12,12 @@ import com.opencsv.exceptions.CsvException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 //Main class shows output data to the executive and VIP client
 public class Main {
@@ -50,18 +55,15 @@ public class Main {
 
     //write artist ratings to file
     private static void writeCSVFile(String filename, List<ArtistRating> artistRatings) throws IOException {
-        CSVWriter writer = new CSVWriter(new FileWriter(filename));
-        writer.writeNext(new String[]{"Artist Name", "Rating"});
-
-        List<String[]> rows = artistRatingsToRows(artistRatings);
-        writer.writeAll(rows);
-
-        //close the writer
-        writer.close();
+        try (CSVWriter writer = new CSVWriter(new FileWriter(filename))) {
+            writer.writeNext(new String[]{"Artist Name", "Rating"});
+            writer.writeAll(artistRatingsToRows(artistRatings));
+        }
     }
 
     //convert artist ratings to rows
     private static List<String[]> artistRatingsToRows(List<ArtistRating> artistRatings) {
+        // return artistRatings.stream().map(ArtistRating::toRow).collect(Collectors.toList());
         List<String[]> rows = new ArrayList<>(artistRatings.size());
         for (ArtistRating artistRating : artistRatings) {
             rows.add(artistRating.toRow());
@@ -97,8 +99,9 @@ public class Main {
 
     //display artist ratings
     private static void displayArtistRatings(List<ArtistRating> artistRatings) {
+        //artistRatings.forEach(System.out::println);
         for (ArtistRating artistRating : artistRatings) {
-            System.out.printf("%-35s %d%n", artistRating.getArtistName(), artistRating.getRating());
+            System.out.println(artistRating);
         }
     }
 }
@@ -121,10 +124,15 @@ class ArtistRating {
     }
 
     String[] toRow() {
+        //return new String[]{artistName, Integer.toString(rating)};
         String[] row = new String[2];
         row[0] = artistName;
         row[1] = Integer.toString(rating);
         return row;
+    }
+
+    public String toString() {
+        return String.format("%-35s %d%n", getArtistName(), getRating());
     }
 }
 
