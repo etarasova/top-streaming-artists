@@ -6,9 +6,11 @@
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
@@ -26,11 +28,14 @@ public class Main {
 
         //display chart by artist ratings
         artistRatings.sort(new ArtistRatingComparator());
-        displayArtistRatings(artistRatings);
+        //displayArtistRatings(artistRatings);
+        writeCSVFile("Artist_Ratings.csv", artistRatings);
 
         //display chart by artist name
         artistRatings.sort(new ArtistNameComparator());
-        displayArtistRatings(artistRatings);
+        //displayArtistRatings(artistRatings);
+        writeCSVFile("Artist_Sorted.csv", artistRatings);
+
     }
 
     //read csv file using openCSV library
@@ -43,10 +48,31 @@ public class Main {
         return reader.readAll();
     }
 
+    //write artist ratings to file
+    private static void writeCSVFile(String filename, List<ArtistRating> artistRatings) throws IOException {
+        CSVWriter writer = new CSVWriter(new FileWriter(filename));
+        writer.writeNext(new String[]{"Artist Name", "Rating"});
+
+        List<String[]> rows = artistRatingsToRows(artistRatings);
+        writer.writeAll(rows);
+
+        //close the writer
+        writer.close();
+    }
+
+    //convert artist ratings to rows
+    private static List<String[]> artistRatingsToRows(List<ArtistRating> artistRatings) {
+        List<String[]> rows = new ArrayList<>(artistRatings.size());
+        for (ArtistRating artistRating : artistRatings) {
+            rows.add(artistRating.toRow());
+        }
+        return rows;
+    }
+
     //create chart from file
     private static Map<String, Integer> createChart(List<String[]> rows) throws Exception {
         Map<String, Integer> chart = new HashMap<>();
-        for (String[] columns: rows) {
+        for (String[] columns : rows) {
             String artistName = columns[2];
             //if the map contains the artistsName
             if (chart.containsKey(artistName)) {
@@ -92,6 +118,13 @@ class ArtistRating {
 
     int getRating() {
         return rating;
+    }
+
+    String[] toRow() {
+        String[] row = new String[2];
+        row[0] = artistName;
+        row[1] = Integer.toString(rating);
+        return row;
     }
 }
 
