@@ -4,7 +4,12 @@
  * Name: Elena Tarasova
  */
 
-import java.io.File;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
+
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 //Main class shows output data to the executive and VIP client
@@ -13,28 +18,32 @@ public class Main {
     private static final String FILE_NAME = "data/regional-global-weekly-2020-01-17--2020-01-24.csv";
 
     public static void main(String[] args) throws Exception {
-        //create Map to store name of artists and how many times they appear in chart
-        Map<String, Integer> chart = createChart(FILE_NAME);
 
-        //display chart by appearance artist in chart
-        displayOrderedChart(chart);
+        //create Map to store name of artists and how many times they appear in chart
+        Map<String, Integer> chart = createChart(readCSVFile(FILE_NAME));
+
+        //display chart by artist ratings
+        displayArtistRatings(getArtistRatings(chart));
 
         //display chart by artist name
-        displayArtistInAlphabeticalOrder(chart);
+        displaySortedArtists(getSortedArtists(chart), chart);
+    }
 
+    //read csv file using openCSV library
+    private static List<String[]> readCSVFile(String filename) throws IOException, CsvException {
+        //Start reading from line number 2 (line numbers start from zero)
+        CSVReader reader = new CSVReaderBuilder(new FileReader(filename))
+                .withSkipLines(2)
+                .build();
+        //Read all rows at once
+        return reader.readAll();
     }
 
     //create chart from file
-    private static Map<String, Integer> createChart(String fileName) throws Exception {
-        Scanner scanner = new Scanner(new File(fileName));
-        String description = scanner.nextLine();
-        String title = scanner.nextLine();
-
+    private static Map<String, Integer> createChart(List<String[]> rows) throws Exception {
         Map<String, Integer> chart = new HashMap<>();
-        while (scanner.hasNextLine()) {
-            String[] tokens = scanner.nextLine().split(",");
-            String artistName = tokens[2].trim();
-
+        for (String[] columns: rows) {
+            String artistName = columns[2];
             //if the map contains the artistsName
             if (chart.containsKey(artistName)) {
                 int count = chart.get(artistName);
@@ -47,34 +56,37 @@ public class Main {
     }
 
 
-    //display ordered chart
-    private static void displayOrderedChart(Map<String, Integer> chart) {
+    //get artist ratings
+    private static List<ArtistRating> getArtistRatings(Map<String, Integer> chart) {
         List<ArtistRating> artistRatings = new LinkedList<>();
         for (String artistName : chart.keySet()) {
             artistRatings.add(new ArtistRating(artistName, chart.get(artistName)));
         }
-
         artistRatings.sort(new ArtistRatingComparator());
+        return artistRatings;
+    }
 
+    //display artist ratings
+    private static void displayArtistRatings(List<ArtistRating> artistRatings) {
         for (ArtistRating artistRating : artistRatings) {
             System.out.printf("%-35s %d%n", artistRating.getArtistName(), artistRating.getRating());
         }
     }
 
-    //display artists in alphabetical order
-    public static void displayArtistInAlphabeticalOrder(Map<String, Integer> chart) {
-        //get artists names
-        Set<String> artistsNames = chart.keySet();
-
+    // get sorted artists
+    private static Set<String> getSortedArtists(Map<String, Integer> chart) {
         //sort artists names
-        TreeSet<String> sortedArtistsNames =  new TreeSet<>(artistsNames);
+        TreeSet<String> sortedArtistsNames =  new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        sortedArtistsNames.addAll(chart.keySet());
+        return sortedArtistsNames;
+    }
 
+    //display artists in alphabetical order
+    private static void displaySortedArtists(Set<String> sortedArtistsNames, Map<String, Integer> chart) {
         for (String artistName : sortedArtistsNames) {
             System.out.printf("%-35s %d%n", artistName, chart.get(artistName));
         }
-
     }
-
 }
 
 class ArtistRating {
