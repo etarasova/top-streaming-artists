@@ -22,11 +22,15 @@ public class Main {
         //create Map to store name of artists and how many times they appear in chart
         Map<String, Integer> chart = createChart(readCSVFile(FILE_NAME));
 
+        List<ArtistRating> artistRatings = getArtistRatings(chart);
+
         //display chart by artist ratings
-        displayArtistRatings(getArtistRatings(chart));
+        artistRatings.sort(new ArtistRatingComparator());
+        displayArtistRatings(artistRatings);
 
         //display chart by artist name
-        displaySortedArtists(getSortedArtists(chart), chart);
+        artistRatings.sort(new ArtistNameComparator());
+        displayArtistRatings(artistRatings);
     }
 
     //read csv file using openCSV library
@@ -62,7 +66,6 @@ public class Main {
         for (String artistName : chart.keySet()) {
             artistRatings.add(new ArtistRating(artistName, chart.get(artistName)));
         }
-        artistRatings.sort(new ArtistRatingComparator());
         return artistRatings;
     }
 
@@ -70,21 +73,6 @@ public class Main {
     private static void displayArtistRatings(List<ArtistRating> artistRatings) {
         for (ArtistRating artistRating : artistRatings) {
             System.out.printf("%-35s %d%n", artistRating.getArtistName(), artistRating.getRating());
-        }
-    }
-
-    // get sorted artists
-    private static Set<String> getSortedArtists(Map<String, Integer> chart) {
-        //sort artists names
-        TreeSet<String> sortedArtistsNames =  new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        sortedArtistsNames.addAll(chart.keySet());
-        return sortedArtistsNames;
-    }
-
-    //display artists in alphabetical order
-    private static void displaySortedArtists(Set<String> sortedArtistsNames, Map<String, Integer> chart) {
-        for (String artistName : sortedArtistsNames) {
-            System.out.printf("%-35s %d%n", artistName, chart.get(artistName));
         }
     }
 }
@@ -104,6 +92,19 @@ class ArtistRating {
 
     int getRating() {
         return rating;
+    }
+}
+
+class ArtistNameComparator implements Comparator<ArtistRating> {
+    @Override
+    public int compare(ArtistRating artistRating1, ArtistRating artistRating2) {
+        // sort by name
+        int result = artistRating1.getArtistName().compareToIgnoreCase(artistRating2.getArtistName());
+        // then sort by rating if name is the same
+        if (result == 0) {
+            result = -(artistRating1.getRating() - artistRating2.getRating());
+        }
+        return result;
     }
 }
 
