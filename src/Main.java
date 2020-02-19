@@ -29,17 +29,20 @@ public class Main {
         //create Map to store name of artists and how many times they appear in chart
         Map<String, Integer> chart = createChart(readCSVFile(FILE_NAME));
 
+        //create List to get artists ratings
         List<ArtistRating> artistRatings = getArtistRatings(chart);
 
-        //display chart by artist ratings
+        //sort chart by artist ratings
         artistRatings.sort(new ArtistRatingComparator());
-        //displayArtistRatings(artistRatings);
-        writeCSVFile("Artist_Ratings.csv", artistRatings);
 
-        //display chart by artist name
+        //write sorted chart in file
+        writeCSVFile("output/Artist_Ratings.csv", artistRatings);
+
+        //sort chart by artist name
         artistRatings.sort(new ArtistNameComparator());
-        //displayArtistRatings(artistRatings);
-        writeCSVFile("Artist_Sorted.csv", artistRatings);
+
+        //write sorted chart in file
+        writeCSVFile("output/Artist_Sorted.csv", artistRatings);
 
     }
 
@@ -63,6 +66,7 @@ public class Main {
 
     //convert artist ratings to rows
     private static List<String[]> artistRatingsToRows(List<ArtistRating> artistRatings) {
+        // alternative implementation in Java 8
         // return artistRatings.stream().map(ArtistRating::toRow).collect(Collectors.toList());
         List<String[]> rows = new ArrayList<>(artistRatings.size());
         for (ArtistRating artistRating : artistRatings) {
@@ -99,6 +103,7 @@ public class Main {
 
     //display artist ratings
     private static void displayArtistRatings(List<ArtistRating> artistRatings) {
+        // alternative implementation in Java 8
         //artistRatings.forEach(System.out::println);
         for (ArtistRating artistRating : artistRatings) {
             System.out.println(artistRating);
@@ -124,6 +129,7 @@ class ArtistRating {
     }
 
     String[] toRow() {
+        // alternative implementation in Java 8
         //return new String[]{artistName, Integer.toString(rating)};
         String[] row = new String[2];
         row[0] = artistName;
