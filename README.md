@@ -22,3 +22,11 @@ I used IntelliJ Idea as my IDE.
 * Data is saved into the `data` folder.
 * Output files are saved into the `output` folder.
 * The required libraries are in the `lib` folder.
+
+## How to build and run
+
+1. Open terminal window
+2. Navigate to go "scripts" folder
+3. Execute `./run.sh`
+
+Note: You may need to give execute permission to the script by running `chmod +x *.sh` from "scripts" folder
