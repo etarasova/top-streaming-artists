@@ -10,10 +10,11 @@ The "Artist_Ratings.csv" file produced by the program contains a list of artist 
 
 * [Java 8](https://docs.oracle.com/javase/8/docs/api/index.html)
 * [OpenCSV](http://opencsv.sourceforge.net/)
+* [Travis CI](https://travis-ci.com/)
 * [IntelliJ Idea](https://www.jetbrains.com/idea/)
 
 Java 8 is used here because it's the department's officially supported language and version.
-OpenCSV is a library which is used to read a CSV file (spotify chart in this case) and write data to CSV files (output of this program).
+OpenCSV is a library which is used to read a CSV file (spotify chart in this case) and write data to CSV files (output of this program). This repository is linked to Travis-CI by way of a `.travis.yml` file in the root of the directory.
 I used IntelliJ Idea as my IDE.
 
 ## Folder Structure
